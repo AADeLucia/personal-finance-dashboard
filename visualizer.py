@@ -24,7 +24,6 @@ class Visualizer:
 
 
     def plot_agreggate_transactions_by_month(self):
-        print("Graphing")
         if self.transaction_df is None:
             return
 
