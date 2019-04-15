@@ -10,6 +10,7 @@ from utility import Utility
 visualizer = Visualizer()
 util = Utility()
 
+
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = "Finance Dashboard"
@@ -29,13 +30,7 @@ app.layout = html.Div(children=[
 
     # Main tabs
     dcc.Tabs(id="main-tabs", value="transactions-overview", children=[
-        dcc.Tab(label="Transactions Overview", value="transactions-overview", children=[
-            html.Div(className="row", children=[
-                html.Div(className="six columns", id="month-overview", children=[
-                    html.P("Number of Transactions by Month"),
-                ]),
-            ]),
-        ]),
+        dcc.Tab(label="Transactions Overview", value="transactions-overview", id="transactions-overview"),
         dcc.Tab(label="Month Breakdown", value="month-breakdown")
     ]), # End tabs
 
@@ -66,16 +61,28 @@ def display_transactions(n_clicks, contents, filename):
     return children
 
 
-@app.callback(Output(component_id="month-overview", component_property="children"),
+@app.callback(Output(component_id="transactions-overview", component_property="children"),
         [Input(component_id="create-plots-btn", component_property="n_clicks")])
-def plot_month_overview(n_clicks):
+def plot_overview(n_clicks):
     if n_clicks is None:
-        return html.P("Upload data to see month overview")
-    return dcc.Graph(figure=visualizer.plot_agreggate_transactions_by_month())
+        return html.P("Upload data to see transactions overview")
+    
+    children = [
+        html.Div(className="row", children=[
+            html.Div(className="six columns", children=[
+                dcc.Graph(figure=visualizer.plot_agreggate_transactions_by_month())
+            ]),
+            html.Div(className="six columns", children=[
+                dcc.Graph(figure=visualizer.plot_category_pie())
+            ])
+        ])
+    ]
+    
+    return children
 
 
 if __name__ == "__main__":
-    import os
-    app.run_server(host=os.environ["IP"], port=os.environ["PORT"], debug=True)
-    
+    app.run_server(debug=True)
+    # import os
+    # app.run_server(host=os.environ["IP"], port=os.environ["PORT"], debug=True)
     # http://mint-finance-dashboard-aadelucia.c9users.io
