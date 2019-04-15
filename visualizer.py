@@ -7,6 +7,10 @@ import datetime as dt
 class Visualizer:
     def __init__(self):
         self.transaction_df = None
+        with open("mint_subcategories", "r") as f:
+            self.subcategories = {i.split(",")[0].strip():i.split(",")[1].strip() for i in f.readlines()}
+        with open("mint_categories", "r") as f:
+            self.categories = [i.strip() for i in f.readlines()]
         return
 
 
@@ -44,6 +48,26 @@ class Visualizer:
             yaxis = dict(title="Number of Transactions")
         )
         fig = go.Figure(data=traces, layout=layout)
+        return fig
+    
+    
+    def plot_category_pie(self):
+        if self.transaction_df is None:
+            return
+        
+        labels = self.transaction_df.Category.unique()
+        values = [len(self.transaction_df[self.transaction_df.Category==c]) for c in labels]
+        trace = go.Pie(
+            labels = labels,
+            values = values,
+            textinfo=None
+        )
+        
+        layout = go.Layout(
+            title = "Category Distribution"
+        )
+        
+        fig = go.Figure(data=[trace], layout=layout)
         return fig
 
 
